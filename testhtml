@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>webdesign練習檔案</title>
+	<link rel="stylesheet" type="text/css" href="css/mystyle.css" />
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	
+	<style>
+	.link,.img,.mask{
+	width:324px;
+	height:216px;
+	}
+	.link{
+	display:block;
+	position:relative;
+	margin:50px auto;
+	}
+	.img{
+	background-repeat:no-repeat;
+	background-size:cover;
+	background-position:center center;
+	}
+	.mask{
+	position:absolute;
+	top:0px;
+	left:0px;
+	text-align:center;
+	-webkit-transition:all .5s ease-in;
+	transition:all .5s ease-in;
+	color:rgba(255,255,255,0);
+	}
+	.link:hover .mask{
+	background-color:rgba(0,0,0,0.5);
+	color:rgba(255,255,255,1);
+	}
+	.info{
+	width:100%;
+	top:50%;
+	margin-top:50%;
+	transform:translateY(-50%);
+	}
+	p{
+	font-size:30px;
+	font-weight: bold;
+	}
+	div.carousel-caption{
+		text-align:left;
+	}
+	ul.navbar-nav{
+		font-size: 18px;
+		font-weight: bold;
+		
+	}
+	.footer1:hover,.footer2:hover,.footer3:hover,.footer4:hover,.footer5:hover,.footer6:hover,.footer7:hover{
+	position: relative;
+	top:-5px;
+	}
+	ul.navbar-nav{
+	margin-top:20px;
+	}
+	.stage{
+	float:right;
+	width:120px;
+	height:auto;
+	margin:0 auto;
+	position:relative;
+	-webkit-transform-origin:center top;
+	-webkit-transform:rotate(-30deg);
+	-webkit-animation:sway 2.2s infinite alternate ease-in-out;
+	}
+
+	@-webkit-keyframes sway{
+		to{
+			-webkit-transform:rotate(30deg);
+			}
+	}
+	</style>
+  </head>
+  <body>
+  
+  <nav class="navbar navbar-inverse id="header">
+	<div class="container">
+		<div class="navbar-header">
+			<div class="navbar-collapse collapse"></div>
+			<a href="index.html"><img src="img/brixton-logo.jpg" style="height:80px;" "width:50px;"></a>
+		</div>
+		<div>
+			<ul class="nav navbar-nav">
+				<li class="dropdown"> 
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">商品資訊<span class=" caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="mens.html">MEN'S</a></li>
+						<li><a href="snapback.html">SNAP BACKS</a></li>
+						<li><a href="tees.html">TEES</a></li>
+						<li><a href="accessories.html">ACCESSORIES</a></li>
+					</ul>
+				</li>
+				<li> <a href="place.html">店鋪資訊</a></li>
+				<li> <a href="shop.html">線上購物</a></li>
+				<li> <a href="join.html">徵才資訊</a></li>
+				<li> <a href="contact.html">聯絡我們</a></li>
+				<form class="navbar-form navbar-right">
+				<input type="text" placeholder="帳號" class="form-control">
+				<input type="password" placeholder="密碼" class="form-control">
+				<button class="btn btn-primary" type="submit">登入></button>
+				</form>
+			</ul>
+		</div>
+	</div>
+  </nav>
+		  <div class="stage" style="z-index:1;">
+		<img src="img/spiderman.png">
+	</div>
+
+	<div class="container">
+		<div class="jumbotron">
+		<h1>自己的潮流，讓ni自己來決定！</h1>      
+		<p>Make your own superstar style,Right now!</p>      
+		<a href="shop.html" class="btn btn-info btn-lg">前往商城</a>
+		
+	</div>
+	<div class="container">
+		<div id="myCarousel" class="carousel slide" data-ride="carousel">
+		<!-- Indicators -->
+			<ol class="carousel-indicators">
+				<li data-target="#carousel-example" data-slide-to="0" class="active"></li>
+				<li data-target="#carousel-example" data-slide-to="1"></li>
+				<li data-target="#carousel-example" data-slide-to="2"></li>
+				<li data-target="#carousel-example" data-slide-to="3"></li>
+			</ol>
+			<!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+
+      <div class="item active">
+        <img src="img/slide1.jpg" width="1200" >
+        <div class="carousel-caption">
+          <h2>Views</h2>
+          <p>Beatiful view in calofonia,  .</p>
+        </div>
+      </div>
+
+      <div class="item">
+        <img src="img/slide2.jpg" width="1200">
+        <div class="carousel-caption">
+          <h2>Sky</h2>
+          <p>The atmosphere in the sky has a touch of Florence and Venice. </p>
+        </div>
+      </div>
+    
+      <div class="item">
+        <img src="img/slide3.jpg" width="1200">
+        <div class="carousel-caption">
+          <h2>Cars</h2>
+          <p>Driving to the new world.  </p>
+        </div>
+      </div>
+
+      <div class="item">
+        <img src="img/slide4.jpg" width="1200">
+        <div class="carousel-caption">
+          <h2>Shooting</h2>
+          <p>Shooting to get the big pot!  </p>
+        </div>
+      </div>
+
+    <!-- Left and right controls -->
+    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4">
+				<a href="mens.html" class="link">
+					<div class="img img-rounded" style="background-image:url(img/intro1.jpg)"></div>
+						<div class="mask">
+							<div class="info">
+								<p>元智大學東泰男人幫</p>
+							</div>
+						</div>
+				</a>
+			</div>
+			<div class="col-md-4">
+				<a href="shop.html" class="link">
+					<div class="img img-rounded" style="background-image:url(img/intro2.jpg)"></div>
+						<div class="mask">
+							<div class="info">
+								<p>網路商城</p>
+							</div>
+						</div>
+				</a>
+			</div>
+			<div class="col-md-4">
+				<a href="place.html" class="link">
+					<div class="img img-rounded" style="background-image:url(img/intro3.jpg)"></div>
+						<div class="mask">
+							<div class="info">
+								<p>店鋪資訊</p>
+							</div>
+						</div>
+				</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<a href="https://www.facebook.com/pages/Brixton-Taiwan/464238463625102?fref=ts" class="link">
+					<div class="img img-rounded" style="background-image:url(img/intro4.jpg)"></div>
+						<div class="mask">
+							<div class="info">
+								<p>Facebook粉絲專頁</p>
+							</div>
+						</div>
+				</a>
+			</div>
+			<div class="col-md-4">
+				<a href="contact.html" class="link">
+					<div class="img img-rounded" style="background-image:url(img/intro5.jpg)"></div>
+						<div class="mask">
+							<div class="info">
+								<p>聯絡我們</p>
+							</div>
+						</div>
+				</a>
+			</div>
+			<div class="col-md-4">
+				<a href="join.html" class="link">
+					<div class="img img-rounded" style="background-image:url(img/intro6.jpg)"></div>
+						<div class="mask">
+							<div class="info">
+								<p>加入我們</p>
+							</div>
+						</div>
+				</a>
+			</div>
+		</div>
+	</div>
+		<hr>
+		<div class="row id="footer">
+			<div class="col-md-11">
+			<p>只用於學習教學,Only using for studying.</p>
+			<p>合作廠商:</p>
+				<div class="row">
+					<a href="http://www.champion-eu.com/"><img class="footer1" src="img/footer/footer1.jpg"></a>
+					<a href="http://www.santacruzskateboards.com/"><img class="footer2" src="img/footer/footer2.jpg"></a>
+					<a href="http://www.independenttrucks.com/"><img class="footer3" src="img/footer/footer3.jpg"></a>
+					<a href="http://fourstarclothing.com/"><img class="footer4" src="img/footer/footer4.jpg"></a>
+					<a href="http://altamontapparel.com/"><img class="footer5" src="img/footer/footer5.jpg"></a>
+					<a href="http://www.vanstaiwan.com/"><img class="footer6" src="img/footer/footer6.jpg"></a>
+					<a href="http://www.thrashermagazine.com/"><img class="footer7" src="img/footer/footer7.jpg"></a>
+				</div>
+			
+			</div>
+				<div class="col-md-1">
+					<h4>&nbsp&nbsp回頂端</h4>
+					<a href="#"><img src="img/brixton-logo2.jpg" style="height:80px;" "width:50px;"></a>
+				</div>
+		</div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
