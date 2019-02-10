@@ -125,9 +125,9 @@ def check_angel(box_comp):
 
 def overlap_move(box_comp,box_w):
     #read file
-    box_comp = pd.read_csv("box_5.csv")
+    box_comp = pd.read_csv("box_1.csv")
     box_comp = check_angel(box_comp)
-    box_w = pd.read_csv("box_5_w.csv")  
+    box_w = pd.read_csv("box_1_w.csv")  
     
     for item in ['lbx','lby','rbx','rby','rtx','rty','ltx','lty','midx','midy']:
         box_comp[item] = box_comp[item].astype(int)
@@ -548,5 +548,12 @@ def overlap_move(box_comp,box_w):
             box.set_value(temp.index, 'place', 'O')
             box_comp.set_value(temp.index, 'place', 'O')
             res = res.append(box.loc[temp.index])
-        
-    return res
+    res = res.reset_index(drop=True)
+    o_r = []
+    for j in range(len(res)):
+        if len(check_overlap(j,res))!=0:
+            o_r.append(check_overlap(j,res))
+    if len(o_r)==0:
+        return res
+    else:
+        return False
