@@ -1,0 +1,172 @@
+import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from random import randint
+from random import choice
+from random import random
+class GA_binary():
+    def __init__(self, fitness_f ,control ,cross_rate, mutation_rate ,pop_size, pool_size,iteration,x, y ):  
+        self.fitness_f = fitness_f
+        self.cross_rate = cross_rate
+        self.mutation_rate = mutation_rate
+        self.pop_size = pop_size
+        self.iteration = iteration
+        self.control = control
+        self.local_opt_list = []
+        if(isinstance(x, pd.DataFrame) and isinstance(x, pd.DataFrame)):        
+            self.x = x
+            self.y = y
+            self.best_X = 0
+            self.best_y = 100
+            self.col_index = x.columns
+            self.chro_lenth = len(x.columns)
+            self.fitness = self.random_population(1,self.pop_size)
+            if(self.control==1):
+                self.global_opt = 0
+            else:
+                self.global_opt = 100000
+            self.pool_size = pool_size
+            #self.global_opt_X 
+        else:
+            print("Error! X and Y must be dataframe!")
+            return -1
+        self.population = self.random_population(self.chro_lenth,self.pop_size)
+        self.pool = self.random_population(self.chro_lenth,self.pool_size)
+        
+    def random_population(self,chro_lenth,pop_size):
+        population =  pd.DataFrame(np.repeat(0,pop_size*chro_lenth).reshape(pop_size,chro_lenth))
+        for c in range(pop_size):
+            for l in range(chro_lenth):
+                population.iloc[c][l] = choice([0,1])
+        return population 
+    
+    def evaluation(self):
+        #control = 0 -> min
+        #control = 1 -> max
+        for i in range(self.pop_size):
+            chro_X = self.x[self.col_index[np.where((self.population.iloc[i]) > 0 )[0]]]
+            self.fitness.iloc[i]  = cv_fold(chro_X,self.y)
+        if(self.control == 0):
+            local_opt = self.fitness[0].min()
+            self.local_opt_list.append(local_opt)
+            opt_index = np.where(self.fitness==local_opt)[0]
+        else:
+            local_opt = self.fitness[0].max()
+            self.local_opt_list.append(local_opt)
+            opt_index = np.where(self.fitness==local_opt)[0]
+        print(self.fitness)
+        print("locol opt = "+str(local_opt)+"in chromosome "+str(opt_index))
+        #print(self.population.iloc[opt_index])
+        
+        
+        if(self.control == 0):
+            if(local_opt <= self.global_opt):
+                self.global_opt = local_opt
+                self.global_opt_X = self.population.iloc[opt_index]
+        else:
+            if(local_opt >= self.global_opt):
+                self.global_opt = local_opt
+                self.global_opt_X = self.population.iloc[opt_index]
+        print("global opt =  "+str(self.global_opt)+" with chromosome ")
+        print(self.global_opt_X)
+        
+        
+        
+    def reproduction_new(self):
+        best_index = self.fitness.sort_values(by = 0,axis =0 , ascending =(1-self.control)).index[:self.pool_size]
+        for i in range(self.pool_size):
+            self.pool.iloc[i] = self.population.iloc[best_index[i]]
+            
+    def reproduction(self):       
+        if(self.control == 0):
+            fitness_ev =  1 / ( self.fitness *  self.fitness *self.fitness*self.fitness*self.fitness*self.fitness)
+        else:
+            fitness_ev =  self.fitness
+        #fitness_ev = self.fitness
+        fit_sum = fitness_ev.sum()
+        #print(fit_sum)
+        cnt = 0
+        for i in range(self.pop_size):
+            num = int(fitness_ev.iloc[i]/fit_sum * self.pop_size)
+            for c in range(num):
+                #print(num)
+                self.pool.iloc[cnt] = self.population.iloc[i]
+                cnt = cnt + 1
+        while cnt < self.pop_size:
+            self.pool.iloc[cnt] = self.population.iloc[5]
+            cnt = cnt + 1
+        #print(cnt)
+    
+    
+    def cross_over(self):
+        cnt= 0
+        while cnt < self.pop_size:
+            #random choose two chromosome
+            chro_1 = self.pool.iloc[randint(0, self.pool_size-1)]
+            chro_2 = self.pool.iloc[randint(0, self.pool_size-1)]
+            #non cross
+            if(random()> self.cross_rate):
+                self.population.iloc[cnt] = chro_1
+                self.population.iloc[cnt+1] = chro_2
+                cnt = cnt +2
+            #cross over
+            else:
+                pos = randint(0, self.chro_lenth)
+                while pos==0 or pos == (self.chro_lenth-1):
+                    pos = randint(0, self.chro_lenth-1)
+                #print(pos)
+                for i in range(pos):
+                    self.population.iloc[cnt][i] = chro_1.iloc[i]
+                    self.population.iloc[cnt+1][i] = chro_2.iloc[i]
+                for i in range(pos,self.chro_lenth):
+                    self.population.iloc[cnt][i] = chro_2.iloc[i]
+                    self.population.iloc[cnt+1][i] = chro_1.iloc[i]
+                cnt = cnt +2
+    def mutation(self):
+        for i in range(self.pop_size):
+            if(random()<self.mutation_rate):
+                pos = randint(0, self.chro_lenth-1)
+                self.population.iloc[i][pos] = 1-self.population.iloc[i][pos] 
+    
+    
+    def check_f_num(self,min_feature):
+        for i in range(len(self.population)):
+            while(self.population.iloc[i].sum()<min_feature):
+                self.population.iloc[i][randint(0, self.chro_lenth-1)] = 1
+    
+    def run(self,min_feature):
+        for i in range(self.iteration):
+            print("Iteration"+str(i))
+            self.check_f_num(min_feature)
+            self.evaluation()
+            #self.reproduction(control)
+            self.reproduction_new()
+            self.cross_over()
+            self.mutation()
+            
+QQ = GA_binary(cv_fold,1,0.5,0.05,30,10,20,X_train,y_train)
+QQ.run(10)
+def cv_fold(X,y):
+    param_grid = {"max_depth": [5,10,20,30,40,50,60,70],
+              "max_features": [4,5,6,7,8,9,10]}
+    kfold = StratifiedKFold(y=y,n_folds=5,random_state=1,shuffle=True)
+    best_param_score = []
+    param  = pd.DataFrame()
+    for a in range(len(param_grid['max_depth'])):
+        for b in range(len(param_grid['max_features'])):
+            score=[]
+            for k, (train,test) in enumerate(kfold):
+                clf = RandomForestClassifier(n_estimators=10, 
+                                             max_depth = param_grid['max_depth'][a],
+                                             max_features = param_grid['max_features'][b],
+                                             random_state=0)
+                res = clf.fit(X.iloc[train], np.array(y)[train]).score(X.iloc[test], np.array(y)[test])
+                #print 'depth=',param_grid['max_depth'][a],'feature=',param_grid['max_features'][b]
+                #print 'score=',sss
+                score.append(np.array(res))
+            param = param.append(pd.DataFrame(np.array([param_grid['max_depth'][a],param_grid['max_features'][b],np.mean(np.array(score))]).reshape(1,3)))
+            best_param_score.append(np.mean(np.array(score)))
+    #print 'score=',best_param,'lem',len(best_param)
+    #np.max(np.array(best_param))
+    return [np.max(np.array(best_param_score)),param.sort_values(2,ascending=False).iloc[0,]]
