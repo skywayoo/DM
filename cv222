@@ -1,0 +1,115 @@
+
+import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+def DQI2dx(data,pca_comp,ci = 0.95):
+    w = float(1)/np.sqrt((1-ci))
+    data_X = data.reset_index()
+    #PCA
+    pca = PCA(n_components=pca_comp)
+    pca.fit(data_X)
+    X_transformed = pca.transform(data_X)
+    #zscore
+    scaler = StandardScaler()
+    scaler.fit(X_transformed)    
+    Z_X = scaler.transform(X_transformed)
+    
+    DQI_x = [] 
+    for z in Z_X:
+        print z
+        DQI_x.append(np.sqrt(sum(z*z)))
+        #print sum(z*z)
+    
+    DQI_x = np.asarray(DQI_x)
+    
+    upper_diff = 1
+    lower_diff = 1
+    original_DQI_x = DQI_x.copy()
+    delete_index = []
+    while upper_diff != 0 or lower_diff != 0:
+        upper_quartile = np.percentile(DQI_x, 75)
+        lower_quartile = np.percentile(DQI_x, 25)
+        
+        iqr = upper_quartile - lower_quartile
+        upper_whisker = DQI_x[DQI_x <= (upper_quartile+1.5*iqr)].max()
+        lower_whisker = DQI_x[DQI_x>=lower_quartile-1.5*iqr].min()
+            
+        upper_data = DQI_x[DQI_x > upper_whisker]
+        lower_data = DQI_x[DQI_x < lower_whisker]
+        if len(upper_data) > 0:
+            upper_diff = upper_data.max() - upper_whisker
+        else:
+            upper_diff = 0
+        if len(lower_data) > 0:
+            lower_diff = lower_whisker - lower_data.min()
+        else:
+            lower_diff = 0
+        
+        if upper_diff != 0 or lower_diff != 0:
+            if(upper_diff >= lower_diff):
+                delete_index.append(np.where(original_DQI_x == upper_data.max())[0][0])
+                DQI_x = np.delete(DQI_x, np.where(DQI_x == upper_data.max())[0])          
+            else:
+                delete_index.append(np.where(original_DQI_x == lower_data.min())[0][0])
+                DQI_x = np.delete(DQI_x, np.where(DQI_x == lower_data.min())[0])
+    DQI_x_T_U = DQI_x.mean() + w* DQI_x.std()
+    
+    outlier = np.where(original_DQI_x>DQI_x_T_U)[0]
+    return [DQI_x,original_DQI_x,outlier,DQI_x_T_U,pca,scaler]
+
+
+def DQI2d_value(data,pca,scaler):
+    data_X = data.reset_index()
+    #PCA
+    X_transformed = pca.transform(data_X)
+    #zscore
+    Z_X = scaler.transform(X_transformed)
+    DQI_x = [] 
+    for z in Z_X:
+        DQI_x.append(np.sqrt(sum(z*z)))
+    DQI_x = np.asarray(DQI_x)
+    return DQI_x
+
+def DQI1d(X,b=1.5, ci = 0.95):
+    w = float(1)/np.sqrt((1-ci))
+    DQI_x = np.asarray(X)
+    
+    upper_diff = 1
+    lower_diff = 1
+    original_DQI_x = DQI_x.copy()
+    delete_index = []
+    while upper_diff != 0 or lower_diff != 0:
+       
+        #print upper_diff,lower_diff
+        #median = np.median(DQI_x)
+        upper_quartile = np.percentile(DQI_x, 75)
+        lower_quartile = np.percentile(DQI_x, 25)
+        
+        iqr = upper_quartile - lower_quartile
+        upper_whisker = DQI_x[DQI_x <= (upper_quartile+b*iqr)].max()
+        lower_whisker = DQI_x[DQI_x>=lower_quartile-b*iqr].min()
+            
+        upper_data = DQI_x[DQI_x > upper_whisker]
+        lower_data = DQI_x[DQI_x < lower_whisker]
+        if len(upper_data) > 0:
+            upper_diff = upper_data.max() - upper_whisker
+        else:
+            upper_diff = 0
+        if len(lower_data) > 0:
+            lower_diff = lower_whisker - lower_data.min()
+        else:
+            lower_diff = 0
+        
+        if upper_diff != 0 or lower_diff != 0:
+            if(upper_diff >= lower_diff):
+                delete_index.append(np.where(original_DQI_x == upper_data.max())[0][0])
+                DQI_x = np.delete(DQI_x, np.where(DQI_x == upper_data.max())[0])          
+            else:
+                delete_index.append(np.where(original_DQI_x == lower_data.min())[0][0])
+                DQI_x = np.delete(DQI_x, np.where(DQI_x == lower_data.min())[0])
+    DQI_x_T_U = DQI_x.mean() + w* DQI_x.std()
+    DQI_x_T_L = DQI_x.mean() -  w* DQI_x.std()
+    
+    outlier = np.where((original_DQI_x>DQI_x_T_U) | (original_DQI_x< DQI_x_T_L))[0]
+    return [DQI_x,original_DQI_x,outlier,DQI_x_T_U,DQI_x_T_L]
