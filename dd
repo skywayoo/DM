@@ -1,0 +1,49 @@
+import re
+import numpy as np
+import pandas as pd
+
+gerber_path = "D:/flying probe/data/SPARROW1_SOCX4-V1~~D01/46_BOTTOM.art"
+
+gerber_txt = open(gerber_path,'r')
+gerber_txt = gerber_txt.read()
+#判斷art格式設定
+#%FSLAX25Y25*MOIN*%
+unit = re.findall('MO[A-Z]+',gerber_txt)[0][2:]
+spec =  re.findall('%FSLAX[\d]+',gerber_txt)[0]
+integer_pos, decimal_pos = filter(str.isdigit, spec)[0],filter(str.isdigit, spec)[1]
+print 'integer position = {} decimal position = {}'.format(integer_pos,decimal_pos)
+align_num = 10**float(decimal_pos)
+if unit == "IN":
+    m_val = align_num / 1000 #轉mil
+elif unit == "MM":
+    m_val = (align_num / 0.0393700787 / 1000)  #轉mil
+gerber_txt = gerber_txt.split("\n")
+
+#class macro_parse:
+#    def _init_(self):
+#        self.
+for i in range(len(gerber_txt)):
+    if gerber_txt[i] == "%AMMACRO72*":
+        break
+    
+test = gerber_txt[i+1:i+20]
+coord = pd.DataFrame()
+for i in range(len(test)):
+        
+    temp = test[i].split(",")
+    if i == 0:
+        coord = coord.append(pd.DataFrame(np.array([np.float(temp[3]),np.float(temp[4])]).reshape(1,2)))
+    elif i == len(test)-1:
+        pass
+    else:
+        coord = coord.append(pd.DataFrame(np.array([np.float(temp[0]),np.float(temp[1])]).reshape(1,2)))
+
+coord = coord * m_val
+coord.columns=['X','Y']
+
+res_fun = []
+for i in range(len(coord)-1):
+    a = np.array([[coord['X'].values[i], 1],[coord['X'].values[i+1],1]])
+    b = np.array([coord['Y'].values[i], coord['Y'].values[i+1]])
+    print(np.linalg.solve(a,b))
+    res_fun.append(np.linalg.solve(a,b))
